@@ -63,9 +63,9 @@ static const char KEEP_ALIVE = 0x01;
 
 static const char FCGI_HDR[] = {
     0x00,
-	static_cast<char>(FcgiRole::FCGI_ROLE_RESPONDER),
-	KEEP_ALIVE,
-	0x00, 0x00, 0x00, 0x00, 0x00
+    static_cast<char>(FcgiRole::FCGI_ROLE_RESPONDER),
+    KEEP_ALIVE,
+    0x00, 0x00, 0x00, 0x00, 0x00
 };
 static const std::string FCGI_HDR_STR(FCGI_HDR, sizeof(FCGI_HDR));
 static const std::string EMPTY_MARK;
@@ -86,25 +86,25 @@ FastCgiClient<Protocol>::FastCgiClient(typename Protocol::endpoint const& endpoi
 template<typename Protocol>
 FastCgiClient<Protocol>::~FastCgiClient()
 {
-	m_guard.reset();
-	m_ioCtx.stop();
+    m_guard.reset();
+    m_ioCtx.stop();
 
-	if (m_worker.joinable())
-	{
+    if (m_worker.joinable())
+    {
         m_worker.join();
-	}
+    }
 }
 
 template<typename Protocol>
 bool FastCgiClient<Protocol>::openConnection()
 {
-	std::lock_guard<std::mutex> lock(m_sync);
+    std::lock_guard<std::mutex> lock(m_sync);
 
-	if (m_reader.isOpen())
-	{
-		INFO("stream reader already opened.");
-		return true;
-	}
+    if (m_reader.isOpen())
+    {
+        INFO("stream reader already opened.");
+        return true;
+    }
 
     if (!m_reader.open(m_endpoint))
     {
@@ -123,7 +123,7 @@ bool FastCgiClient<Protocol>::sendRequest(
     std::chrono::seconds const& timeout
 )
 {
-	std::lock_guard<std::mutex> lock(m_sync);
+    std::lock_guard<std::mutex> lock(m_sync);
 
     if (!m_reader.isOpen())
     {
@@ -171,8 +171,8 @@ bool FastCgiClient<Protocol>::sendRequest(
 template<typename Protocol>
 void FastCgiClient<Protocol>::closeConnection()
 {
-	std::lock_guard<std::mutex> lock(m_sync);
-	m_reader.close();
+    std::lock_guard<std::mutex> lock(m_sync);
+    m_reader.close();
 }
 
 template<typename Protocol>
@@ -372,14 +372,14 @@ bool FastCgiClient<Protocol>::waitForResponse(
 template<typename Protocol>
 void FastCgiClient<Protocol>::run()
 {
-	INFO("fcgi-client worker started");
-	try
-	{
+    INFO("fcgi-client worker started");
+    try
+    {
         m_ioCtx.run();
-	}
-	catch (...)
-	{
-		// ignore
-	}
-	INFO("fcgi-client worker stopped");
+    }
+    catch (...)
+    {
+        // ignore
+    }
+    INFO("fcgi-client worker stopped");
 }

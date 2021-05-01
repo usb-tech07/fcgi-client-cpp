@@ -49,15 +49,15 @@ StreamReader<Protocol>::StreamReader(asio::io_context& ioCtx)
 template<typename Protocol>
 bool StreamReader<Protocol>::open(typename Protocol::endpoint const& endpoint)
 {
-	asio::error_code ec;
+    asio::error_code ec;
     m_sock.connect(endpoint, ec);
 
     if (ec)
     {
         WARN(
             "unable to connect to host, code (=%d), error (=%s).",
-			ec.value(),
-			ec.message().c_str()
+            ec.value(),
+            ec.message().c_str()
         );
         return false;
     }
@@ -89,27 +89,27 @@ ReturnCode StreamReader<Protocol>::write(std::string const& data)
 template<typename Protocol>
 ReturnCode StreamReader<Protocol>::read(
     char* buf,
-	size_t len,
-	std::chrono::seconds const& expire
+    size_t len,
+    std::chrono::seconds const& expire
 )
 {
-	m_result.reset(new std::promise<ReturnCode>());
+    m_result.reset(new std::promise<ReturnCode>());
     auto f = m_result->get_future();
     if (expire.count() != 0)
     {
-    	// start a timer if caller expects to return until some limit
-    	m_responseTimer.expires_after(expire);
-    	m_responseTimer.async_wait(
-    	    std::bind(
-    	    	&StreamReader::timeoutHandler, this,
+        // start a timer if caller expects to return until some limit
+        m_responseTimer.expires_after(expire);
+        m_responseTimer.async_wait(
+            std::bind(
+                &StreamReader::timeoutHandler, this,
                 std::placeholders::_1 // error code
-			)
-		);
+            )
+        );
     }
     asio::async_read(
         m_sock,
         asio::buffer(buf, len),
-		std::bind(
+        std::bind(
             &StreamReader::readHandler, this,
             std::placeholders::_1,  // error code
             std::placeholders::_2   // bytes xferred
@@ -129,15 +129,15 @@ ReturnCode StreamReader<Protocol>::read(
             break;
 
         case ReturnCode::TIMEOUT:
-        	m_sock.cancel(ec);
-        	if (ec)
-        	{
+            m_sock.cancel(ec);
+            if (ec)
+            {
                 WARN("cancel async read failed, code (=%d), msg (=%s).", ec.value(), ec.message().c_str());
-        	}
-        	break;
+            }
+            break;
 
         default:
-        	break;
+            break;
     }
 
     return rc;
@@ -147,15 +147,15 @@ template<typename Protocol>
 void StreamReader<Protocol>::close()
 {
     if (!m_sock.is_open())
-    	return;
+        return;
 
     asio::error_code ec;
-	m_sock.cancel(ec);
-	if (ec)
-	{
+    m_sock.cancel(ec);
+    if (ec)
+    {
         WARN("cancel async read failed, code (=%d), msg (=%s).", ec.value(), ec.message().c_str());
-	}
-	m_sock.close();
+    }
+    m_sock.close();
 }
 
 template<typename Protocol>
@@ -167,28 +167,28 @@ bool StreamReader<Protocol>::isOpen() const
 template<typename Protocol>
 void StreamReader<Protocol>::readHandler(
     asio::error_code const& ec,
-	std::size_t bytesXferred
+    std::size_t bytesXferred
 )
 {
     if (ec == asio::error::operation_aborted)
     {
-    	// read operation was cancelled
-    	return;
+        // read operation was cancelled
+        return;
     }
 
     if (ec)
     {
-    	DEBUG("async_read error, code (=%d), msg (=%s).", ec.value(), ec.message().c_str());
+        DEBUG("async_read error, code (=%d), msg (=%s).", ec.value(), ec.message().c_str());
 
         // socket closed
-    	m_result->set_value(
+        m_result->set_value(
             (ec == asio::error::eof) ? ReturnCode::CLOSED : ReturnCode::IO_ERROR
         );
     }
     else
     {
         // socket closed
-    	m_result->set_value(ReturnCode::OK);
+        m_result->set_value(ReturnCode::OK);
     }
 }
 
@@ -197,8 +197,8 @@ void StreamReader<Protocol>::timeoutHandler(asio::error_code const& ec)
 {
     if (ec == asio::error::operation_aborted)
     {
-    	// read operation was cancelled
-    	return;
+        // read operation was cancelled
+        return;
     }
 
     m_result->set_value(ReturnCode::TIMEOUT);

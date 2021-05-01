@@ -41,10 +41,10 @@
 
 enum class ReturnCode
 {
-	OK       = 0,    // no error
+    OK       = 0,    // no error
     IO_ERROR = -1,   // read/write i/o error
-	CLOSED   = -2,   // peer socket closed
-	TIMEOUT  = -3,   // timer expired
+    CLOSED   = -2,   // peer socket closed
+    TIMEOUT  = -3,   // timer expired
 };
 
 using KeyValuePair = std::pair<std::string, std::string>;

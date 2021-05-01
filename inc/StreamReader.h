@@ -50,74 +50,74 @@
 template<typename Protocol>
 class StreamReader final
 {
-	static const std::chrono::seconds DEFAULT_WAIT;
+    static const std::chrono::seconds DEFAULT_WAIT;
 
 public:
 
-	/**
-	 * Constructor
-	 *
-	 * @param ioCtx passed io context reference
-	 */
-	explicit StreamReader(asio::io_context& ioCtx);
+    /**
+     * Constructor
+     *
+     * @param ioCtx passed io context reference
+     */
+    explicit StreamReader(asio::io_context& ioCtx);
 
-	/**
-	 * @brief open the socket for read
-	 *
-	 * @param dest peer ip address
-	 * @param port peer listen port
-	 *
-	 * @return true if socket opened successfully,
-	 * false if failed to open socket.
-	 */
-	bool open(typename Protocol::endpoint const& endpoint);
+    /**
+     * @brief open the socket for read
+     *
+     * @param dest peer ip address
+     * @param port peer listen port
+     *
+     * @return true if socket opened successfully,
+     * false if failed to open socket.
+     */
+    bool open(typename Protocol::endpoint const& endpoint);
 
-	/**
-	 * @brief write data to network
-	 *
-	 * @param data binary data to be written
-	 *
-	 * @return OK if write data to socket successfully
-	 * @return IO_ERROR if read error occurs
-	 * @return CLOED if peer socket closed
-	 */
-	ReturnCode write(std::string const& data);
+    /**
+     * @brief write data to network
+     *
+     * @param data binary data to be written
+     *
+     * @return OK if write data to socket successfully
+     * @return IO_ERROR if read error occurs
+     * @return CLOED if peer socket closed
+     */
+    ReturnCode write(std::string const& data);
 
-	/**
-	 * @brief read up to len of bytes data into buffer provided by caller
-	 *
-	 * @param buf read buffer supplied by caller
-	 * @param len buffer capacity
-	 * @param expire maximum wait period
-	 *
-	 * @return OK if read data from socket successfully
-	 * @return IO_ERROR if read error occurs
-	 * @return CLOED if peer socket closed
-	 */
-	ReturnCode read(
+    /**
+     * @brief read up to len of bytes data into buffer provided by caller
+     *
+     * @param buf read buffer supplied by caller
+     * @param len buffer capacity
+     * @param expire maximum wait period
+     *
+     * @return OK if read data from socket successfully
+     * @return IO_ERROR if read error occurs
+     * @return CLOED if peer socket closed
+     */
+    ReturnCode read(
         char* buf,
-		size_t len,
-	    std::chrono::seconds const& expire = DEFAULT_WAIT
+        size_t len,
+        std::chrono::seconds const& expire = DEFAULT_WAIT
     );
 
-	/**
-	 * @brief close socket
-	 */
-	void close();
+    /**
+     * @brief close socket
+     */
+    void close();
 
-	/**
-	 * @brief test if stream is open or not
-	 */
-	bool isOpen() const;
+    /**
+     * @brief test if stream is open or not
+     */
+    bool isOpen() const;
 
 private:
 
     void readHandler(asio::error_code const& ec, std::size_t bytesXferred);
     void timeoutHandler(asio::error_code const& ec);
 
-	asio::basic_stream_socket<Protocol> m_sock;
-	asio::steady_timer m_responseTimer;
-	std::unique_ptr<std::promise<ReturnCode>> m_result;
+    asio::basic_stream_socket<Protocol> m_sock;
+    asio::steady_timer m_responseTimer;
+    std::unique_ptr<std::promise<ReturnCode>> m_result;
 };
 
 #include "StreamReaderImpl.h"

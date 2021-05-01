@@ -43,32 +43,32 @@ class ILogger
 {
 public:
 
-	enum class Level
-	{
-	    INFO_LEVEL,
-		DEBUG_LEVEL,
-		WARN_LEVEL,
-		ERROR_LEVEL,
-		FATAL_LEVEL
-	};
+    enum class Level
+    {
+        INFO_LEVEL,
+        DEBUG_LEVEL,
+        WARN_LEVEL,
+        ERROR_LEVEL,
+        FATAL_LEVEL
+    };
 
-	virtual ~ILogger() = default;
+    virtual ~ILogger() = default;
 
-	virtual void setLogLevel(Level logLevel) = 0;
+    virtual void setLogLevel(Level logLevel) = 0;
 
-	virtual void info(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
+    virtual void info(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
 
-	virtual void debug(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
+    virtual void debug(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
 
-	virtual void warn(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
+    virtual void warn(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
 
-	virtual void error(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
+    virtual void error(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
 
-	virtual void fatal(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
+    virtual void fatal(const char* const fileName, unsigned long line, const char* const fmt...) = 0;
 
-	static ILogger* getLogger();
+    static ILogger* getLogger();
 
-	static void emplaceLogger(ILogger* logger);
+    static void emplaceLogger(ILogger* logger);
 };
 
 #define INFO(fmt, ...)                                                      \
