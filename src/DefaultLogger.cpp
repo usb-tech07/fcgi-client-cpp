@@ -64,17 +64,17 @@ private:
     bool isLoggable(Level level);
 
     void format(
-    	Level logLevel,
+        Level logLevel,
         const char* const fileName,
         unsigned long line
     );
 
     void log(
         Level logLevel,
-		const char* const fileName,
-		unsigned long line,
-		const char* const fmt,
-		va_list& arg
+        const char* const fileName,
+        unsigned long line,
+        const char* const fmt,
+        va_list& arg
     );
 
     std::mutex m_sync;
@@ -82,11 +82,11 @@ private:
 };
 
 static std::map<ILogger::Level, const std::string> LEVEL_STR_MAP {
-	{ ILogger::Level::INFO_LEVEL,  "info"  },
-	{ ILogger::Level::DEBUG_LEVEL, "debug" },
-	{ ILogger::Level::WARN_LEVEL,  "warn"  },
-	{ ILogger::Level::ERROR_LEVEL, "error" },
-	{ ILogger::Level::FATAL_LEVEL, "fatal" },
+    { ILogger::Level::INFO_LEVEL,  "info"  },
+    { ILogger::Level::DEBUG_LEVEL, "debug" },
+    { ILogger::Level::WARN_LEVEL,  "warn"  },
+    { ILogger::Level::ERROR_LEVEL, "error" },
+    { ILogger::Level::FATAL_LEVEL, "fatal" },
 };
 
 static const size_t MAX_TIME_BUF_SIZE = 20;
@@ -199,62 +199,62 @@ bool DefaultLogger::isLoggable(Level logLevel)
 }
 
 void DefaultLogger::format(
-	Level logLevel,
+    Level logLevel,
     const char* const fileName,
     unsigned long line
 )
 {
-	static char tbuf[MAX_TIME_BUF_SIZE] = { 0 };
+    static char tbuf[MAX_TIME_BUF_SIZE] = { 0 };
     auto now = time(NULL);
     auto nowTm = localtime(&now);
     auto pNameNoPath = std::strrchr(fileName, '/');
     std::strftime(tbuf, sizeof(tbuf), "%Y-%m-%d %H:%M:%S", nowTm);
     std::cout << tbuf << "[ " << LEVEL_STR_MAP[logLevel] << " ]  [ "
-    	<< (pNameNoPath == nullptr ? fileName : pNameNoPath + 1)
-		<< ":" << line << " ] ";
+        << (pNameNoPath == nullptr ? fileName : pNameNoPath + 1)
+        << ":" << line << " ] ";
 }
 
 void DefaultLogger::log(
     Level logLevel,
-	const char* const fileName,
-	unsigned long line,
-	const char* const fmt,
-	va_list& arg
+    const char* const fileName,
+    unsigned long line,
+    const char* const fmt,
+    va_list& arg
 )
 {
-	static char lbuf[MAX_LINE_SZ] = { 0 };
-	format(logLevel, fileName, line);
-	va_list argCopy;
-	va_copy(argCopy, arg);
+    static char lbuf[MAX_LINE_SZ] = { 0 };
+    format(logLevel, fileName, line);
+    va_list argCopy;
+    va_copy(argCopy, arg);
 
-	// get printed log statement length with first try on lbuf,
-	// which is 200 byte-long.
-	auto written = std::vsnprintf(lbuf, sizeof(lbuf), fmt, arg);
+    // get printed log statement length with first try on lbuf,
+    // which is 200 byte-long.
+    auto written = std::vsnprintf(lbuf, sizeof(lbuf), fmt, arg);
 
-	if (written < 0)
-	{
-		// out of memory
-	    return;
-	}
+    if (written < 0)
+    {
+        // out of memory
+        return;
+    }
 
-	if (written <= MAX_LINE_SZ)
-	{
-	    // lbuf has complete formatted logging
-		std::cout << lbuf;
-	}
-	else
-	{
-	    // lbuf has partial formatted logging
-	    std::unique_ptr<char[]> pBuf(new char[written]);
+    if (written <= MAX_LINE_SZ)
+    {
+        // lbuf has complete formatted logging
+        std::cout << lbuf;
+    }
+    else
+    {
+        // lbuf has partial formatted logging
+        std::unique_ptr<char[]> pBuf(new char[written]);
 
-	    written = std::vsnprintf(pBuf.get(), written, fmt, argCopy);
+        written = std::vsnprintf(pBuf.get(), written, fmt, argCopy);
 
-	    if (written > 0)
-	    {
-	        std::cout << pBuf.get();
-	    }
-	}
-	std::cout << std::endl;
+        if (written > 0)
+        {
+            std::cout << pBuf.get();
+        }
+    }
+    std::cout << std::endl;
 }
 
 } // sealed namespace
